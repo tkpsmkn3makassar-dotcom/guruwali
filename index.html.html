@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jurnal Pendampingan Individu - TKB SMKN 3 Makassar</title>
+
+<!-- Gaya Tampilan -->
+<style>
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        background-color: #4b4b4b;
+        color: #fff;
+        text-align: center;
+        padding: 15px;
+        line-height: 1.4em;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 1.3em;
+        letter-spacing: 0.5px;
+    }
+
+    header h2 {
+        margin: 5px 0 0 0;
+        font-size: 1em;
+        font-weight: 400;
+        color: #f2c94c;
+    }
+
+    .container {
+        background-color: #ffffff;
+        max-width: 600px;
+        margin: 20px auto;
+        border: 1px solid #edecec;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #edecec;
+        border-radius: 6px;
+        box-sizing: border-box;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 70px;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    button {
+        flex: 1 1 30%;
+        margin: 5px;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    button:nth-child(1) { background-color: #2e7d32; } /* Simpan */
+    button:nth-child(2) { background-color: #616161; } /* Clear */
+    button:nth-child(3) { background-color: #1565c0; } /* Ekspor */
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    .search-box {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .search-box input {
+        width: 80%;
+        padding: 8px;
+        border: 1px solid #edecec;
+        border-radius: 5px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 0.9em;
+    }
+
+    th, td {
+        border: 1px solid #edecec;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    th {
+        background-color: #f7f7f7;
+        color: #333;
+    }
+
+    td button {
+        background-color: #ff9800;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    td button:hover {
+        background-color: #e68900;
+    }
+
+    footer {
+        text-align: center;
+        font-size: 0.9em;
+        color: #777;
+        margin-top: 25px;
+        padding-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            margin: 10px;
+            padding: 15px;
+        }
+
+        button {
+            flex: 1 1 100%;
+        }
+
+        header h1 {
+            font-size: 1.1em;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>JURNAL PENDAMPINGAN INDIVIDU</h1>
+    <h2>TEKNIK KONSTRUKSI BANGUNAN - SMK NEGERI 3 MAKASSAR</h2>
+</header>
+
+<div class="container">
+    <form id="jurnalForm">
+        <label for="tanggal">Tanggal Pertemuan</label>
+        <input type="date" id="tanggal" required>
+
+        <label for="nama">Nama Murid</label>
+        <input type="text" id="nama" placeholder="Masukkan nama murid" required>
+
+        <label for="topik">Topik atau Masalah yang Dibahas</label>
+        <textarea id="topik" placeholder="Tuliskan topik atau masalah yang dibahas"></textarea>
+
+        <label for="rekomendasi">Rekomendasi Tindak Lanjut</label>
+        <textarea id="rekomendasi" placeholder="Tuliskan rekomendasi tindak lanjut"></textarea>
+
+        <label for="keterangan">Keterangan</label>
+        <textarea id="keterangan" placeholder="Tambahkan keterangan jika ada"></textarea>
+
+        <div class="btn-group">
+            <button type="button" onclick="simpanData()">Simpan</button>
+            <button type="reset">Clear Form</button>
+            <button type="button" onclick="exportToExcel()">Ekspor</button>
+        </div>
+    </form>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Cari nama murid..." onkeyup="searchData()">
+    </div>
+
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Nama Murid</th>
+                <th>Topik</th>
+                <th>Rekomendasi</th>
+                <th>Keterangan</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <footer>Develop by TRI PANCAYANA</footer>
+</div>
+
+<!-- SheetJS untuk Ekspor Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<!-- Logika Form -->
+<script>
+let dataJurnal = [];
+let editIndex = -1;
+
+function simpanData() {
+    const tanggal = document.getElementById("tanggal").value;
+    const nama = document.getElementById("nama").value;
+    const topik = document.getElementById("topik").value;
+    const rekomendasi = document.getElementById("rekomendasi").value;
+    const keterangan = document.getElementById("keterangan").value;
+
+    if (!tanggal || !nama) {
+        alert("Tanggal dan Nama Murid wajib diisi!");
+        return;
+    }
+
+    const newData = { tanggal, nama, topik, rekomendasi, keterangan };
+
+    if (editIndex === -1) {
+        dataJurnal.push(newData);
+    } else {
+        dataJurnal[editIndex] = newData;
+        editIndex = -1;
+    }
+
+    document.getElementById("jurnalForm").reset();
+    tampilkanData();
+}
+
+function tampilkanData() {
+    const tbody = document.querySelector("#dataTable tbody");
+    tbody.innerHTML = "";
+
+    dataJurnal.forEach((item, index) => {
+        const row = `
+            <tr>
+                <td>${item.tanggal}</td>
+                <td>${item.nama}</td>
+                <td>${item.topik}</td>
+                <td>${item.rekomendasi}</td>
+                <td>${item.keterangan}</td>
+                <td><button onclick="editData(${index})">Edit</button></td>
+            </tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+function editData(index) {
+    const data = dataJurnal[index];
+    document.getElementById("tanggal").value = data.tanggal;
+    document.getElementById("nama").value = data.nama;
+    document.getElementById("topik").value = data.topik;
+    document.getElementById("rekomendasi").value = data.rekomendasi;
+    document.getElementById("keterangan").value = data.keterangan;
+    editIndex = index;
+}
+
+function searchData() {
+    const keyword = document.getElementById("searchInput").value.toLowerCase();
+    const rows = document.querySelectorAll("#dataTable tbody tr");
+    rows.forEach(row => {
+        const nama = row.children[1].textContent.toLowerCase();
+        row.style.display = nama.includes(keyword) ? "" : "none";
+    });
+}
+
+function exportToExcel() {
+    if (dataJurnal.length === 0) {
+        alert("Tidak ada data untuk diekspor!");
+        return;
+    }
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(dataJurnal);
+    XLSX.utils.book_append_sheet(wb, ws, "Jurnal Pendampingan");
+
+    const namaFile = prompt("Masukkan nama file:", "Jurnal_Pendampingan.xlsx");
+    if (namaFile) {
+        XLSX.writeFile(wb, namaFile.endsWith(".xlsx") ? namaFile : namaFile + ".xlsx");
+    }
+}
+</script>
+
+</body>
+</html>
